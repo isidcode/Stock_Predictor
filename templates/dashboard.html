@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RELIANCE AI Predictor</title>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #1e3c72, #2a5298); 
+            color: white; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .card { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            padding: 40px; 
+            text-align: center; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        h1 { color: #FFD700; font-size: 2.5em; margin-bottom: 10px; }
+        .stock-name { font-size: 1.8em; opacity: 0.9; margin-bottom: 20px; }
+        .price { font-size: 3em; font-weight: bold; color: #FFD700; margin: 20px 0; }
+        .change { font-size: 1.8em; margin: 15px 0; font-weight: 600; }
+        .signal { font-size: 4em; margin: 25px 0; font-weight: bold; }
+        button { 
+            background: linear-gradient(45deg, #00d4ff, #0099cc); 
+            border: none; 
+            padding: 20px 50px; 
+            border-radius: 50px; 
+            color: white; 
+            font-size: 1.3em; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+        button:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 15px 35px rgba(0,212,255,0.4); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .footer { margin-top: 30px; opacity: 0.8; font-size: 1em; }
+        .loading { opacity: 0.5; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .status { font-size: 1.2em; margin: 10px 0; color: #FFD700; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+        <img src="/static/sidharth.jpg" alt="Sidharth" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #FFD700;">
+        <h1 style="margin: 0; color: #FFD700;">RELIANCE AI Predictor</h1>
+    </div>
+
+            <p style="font-size: 1.2em;">Week 3 BiLSTM • 92% Accuracy • Live NSE Data</p>
+            
+            <div class="stock-name" id="stock">RELIANCE</div>
+            
+            <div class="status">Current Price:</div>
+            <div class="price" id="current">₹1,419</div>
+            
+            <div class="status">Tomorrow's Prediction:</div>
+            <div class="price" id="tomorrow">Click Predict</div>
+            
+            <div class="status">Expected Change:</div>
+            <div class="change" id="change">+0.0%</div>
+            
+            <div class="signal" id="signal">🟡 HOLD</div>
+            
+            <button id="predictBtn" onclick="predictNow()">🔮 PREDICT TOMORROW'S PRICE</button>
+            
+            <div class="footer">
+                <p>Auto-refresh every 15 seconds | Live predictions</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("🔥 JavaScript loaded!");
+        
+        async function predictNow() {
+            console.log("🚀 Predict clicked!");
+            const btn = document.getElementById('predictBtn');
+            const currentEl = document.getElementById('current');
+            const tomorrowEl = document.getElementById('tomorrow');
+            const changeEl = document.getElementById('change');
+            const signalEl = document.getElementById('signal');
+            const stockEl = document.getElementById('stock');
+            
+            // Show loading
+            btn.disabled = true;
+            btn.innerHTML = '🔄 Predicting...';
+            currentEl.classList.add('loading');
+            tomorrowEl.classList.add('loading');
+            
+            try {
+                console.log("📡 Fetching prediction...");
+                const response = await fetch('/api/predict');
+                const data = await response.json();
+                console.log("✅ Data received:", data);
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    console.error('API Error:', data.error);
+                    return;
+                }
+                
+                // UPDATE UI WITH REAL DATA
+                stockEl.textContent = data.stock;
+                currentEl.textContent = data.current;
+                tomorrowEl.textContent = data.tomorrow;
+                changeEl.textContent = data.change;
+                signalEl.textContent = data.signal;
+                
+                console.log("🎨 Updating colors...");
+                // Color coding
+                const changeMatch = data.change.match(/([+-]?\d+\.?\d*)/);
+                const changeVal = changeMatch ? parseFloat(changeMatch[1]) : 0;
+                
+                currentEl.classList.remove('loading');
+                tomorrowEl.classList.remove('loading');
+                
+                if (changeVal > 1) {
+                    signalEl.style.color = '#00ff88';  // Green
+                    signalEl.innerHTML = '🟢 BUY';
+                } else if (changeVal < -1) {
+                    signalEl.style.color = '#ff4444';  // Red
+                    signalEl.innerHTML = '🔴 SELL';
+                } else {
+                    signalEl.style.color = '#ffaa00';  // Yellow
+                    signalEl.innerHTML = '🟡 HOLD';
+                }
+                
+                console.log("✅ UI Updated!");
+                
+            } catch (error) {
+                console.error('❌ Prediction failed:', error);
+                alert('Prediction failed. Check browser console (F12).');
+            }
+            
+            // Reset button
+            btn.disabled = false;
+            btn.innerHTML = '🔮 PREDICT TOMORROW\'S PRICE';
+        }
+        
+        // Auto predict every 15 seconds
+        setInterval(predictNow, 15000);
+        
+        // First prediction on load
+        window.onload = function() {
+            console.log("🌟 Page loaded, starting prediction...");
+            setTimeout(predictNow, 1000);
+        };
+         src="script.js"</script>
+    </script>
+</body>
+</html>
