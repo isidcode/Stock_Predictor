@@ -1,0 +1,61 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+    font-family: 'Poppins', sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: white;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+header { text-align: center; margin-bottom: 40px; }
+header h1 { font-size: 3em; font-weight: 700; margin-bottom: 10px; }
+header p { font-size: 1.2em; opacity: 0.9; }
+
+.prediction-card { 
+    background: rgba(255,255,255,0.1); 
+    backdrop-filter: blur(20px); 
+    border-radius: 20px; 
+    padding: 30px; 
+    text-align: center; 
+    margin-bottom: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.current-price { font-size: 1.5em; opacity: 0.8; margin-bottom: 10px; }
+.tomorrow-price { 
+    font-size: 3.5em; 
+    font-weight: 700; 
+    margin: 20px 0; 
+    background: linear-gradient(45deg, #FFD700, #FFA500); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.signal { 
+    font-size: 2em; 
+    margin: 20px 0; 
+    font-weight: 600;
+}
+.predict-btn { 
+    background: linear-gradient(45deg, #00d4ff, #0099cc); 
+    border: none; 
+    padding: 15px 40px; 
+    border-radius: 50px; 
+    color: white; 
+    font-size: 1.1em; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.3s;
+}
+.predict-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0,212,255,0.4); }
+
+.chart-container { 
+    background: rgba(255,255,255,0.1); 
+    backdrop-filter: blur(20px); 
+    border-radius: 20px; 
+    padding: 20px; 
+    margin-bottom: 30px;
+    height: 500px;
+}
+
+.progress { text-align: center; opacity: 0.8; }
+.model-info { display: flex; justify-content: space-between; max-width: 400px; margin: 0 auto; }
